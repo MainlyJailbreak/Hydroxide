@@ -90,9 +90,14 @@ end
 
 local function addElement(upvalueLog, upvalue, index, value, temporary)
     local elementLog = Assets.Element:Clone()
+
     local elementIndexType = type(index)
     local elementValueType = type(value)
     local indexText = toString(index)
+
+    -- Enable automatic sizing
+    elementLog.AutomaticSize = Enum.AutomaticSize.Y
+    elementLog.Size = UDim2.new(1, 0, 0, 0)
 
     if temporary then
         elementLog.ImageColor3 = constants.tempElementColor
@@ -138,42 +143,35 @@ local function addUpvalue(upvalue, temporary)
     local index = upvalue.Index
     local value = upvalue.Value
     local valueType = type(value)
-    
+
     if valueType == "table" then
         upvalueLog = Assets.Table:Clone()
-        local height = 25
-
-        if temporary then
-            upvalueLog.ImageColor3 = constants.tempUpvalueColor
-            upvalueLog.Border.ImageColor3 = constants.tempBorderColor
-        end
-
-        if not temporary then
-            for i, v in pairs(upvalue.Scanned) do
-                local elementLog = addElement(upvalueLog, upvalue, i, v)
-                elementLog.Parent = upvalueLog.Elements
-                
-                height = height + elementLog.AbsoluteSize.Y + 5
-            end
-        end
-
-        upvalueLog.Size = UDim2.new(1, 0, 0, height)
     else
         upvalueLog = Assets.Upvalue:Clone()
-
-        if temporary then
-            upvalueLog.ImageColor3 = constants.tempUpvalueColor
-            upvalueLog.Border.ImageColor3 = constants.tempBorderColor
-        end
-
-        if valueType == "function" then
-            local closureName = getInfo(value).name or ''
-            upvalueLog.Value.Text = (closureName == '' and "Unnamed function") or closureName
-        else
-            upvalueLog.Value.Text = toString(value)
-        end
     end
-    
+
+    -- Enable automatic sizing for layout
+    upvalueLog.AutomaticSize = Enum.AutomaticSize.Y
+    upvalueLog.Size = UDim2.new(1, 0, 0, 0)
+
+    if temporary then
+        upvalueLog.ImageColor3 = constants.tempUpvalueColor
+        upvalueLog.Border.ImageColor3 = constants.tempBorderColor
+    end
+
+    -- Table elements
+    if valueType == "table" and not temporary then
+        for i, v in pairs(upvalue.Scanned) do
+            local elementLog = addElement(upvalueLog, upvalue, i, v)
+            elementLog.Parent = upvalueLog.Elements
+        end
+    elseif valueType == "function" then
+        local closureName = getInfo(value).name or ''
+        upvalueLog.Value.Text = (closureName == '' and "Unnamed function") or closureName
+    else
+        upvalueLog.Value.Text = toString(value)
+    end
+
     upvalueLog.Name = index
     upvalueLog.Index.Text = index
     upvalueLog.Value.TextColor3 = oh.Constants.Syntax[valueType]
