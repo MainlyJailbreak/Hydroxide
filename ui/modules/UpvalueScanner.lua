@@ -540,10 +540,9 @@ viewUpvaluesContext:SetCallback(function()
             selectedLog.TemporaryUpvalues = temporaryUpvalues
         end
 
-        newHeight = UDim2.new(0, 0, 0, newHeight)
-
-        instance.Upvalues.Size = instance.Upvalues.Size + newHeight
-        instance.Size = instance.Size + newHeight
+        -- Update sizes after changes
+        instance.Upvalues.Size = instance.Upvalues.Size + UDim2.new(0, 0, 0, newHeight)
+        instance.Size = instance.Size + UDim2.new(0, 0, 0, newHeight)
 
         upvalueList:Recalculate()
     end
@@ -558,6 +557,29 @@ getScriptContext:SetCallback(function()
         end
     end
 end)
+
+local function clearTemporaryElements()
+    for _, closureLog in pairs(currentUpvalues) do
+        if closureLog.TemporaryUpvalues then
+            for _i, upvalueLog in pairs(closureLog.TemporaryUpvalues) do
+                upvalueLog:Destroy()
+            end
+            closureLog.TemporaryUpvalues = nil
+            closureLog.Closure.TemporaryUpvalues = {}
+        end
+    end
+    upvalueList:Recalculate()
+end
+
+UpvalueScannerGui:GetPropertyChangedSignal("Visible"):Connect(function()
+    if not UpvalueScannerGui.Visible then
+        clearTemporaryElements()
+    end
+end)
+
+UpvalueScannerGui.Visible = true -- When showing
+-- Reset scroll to top on show or on clear
+ResultsClip.CanvasPosition = Vector2.new(0,0)
 
 viewElementsContext:SetCallback(function()
     local temporaryElements = selectedUpvalue and selectedUpvalue.TemporaryElements
