@@ -309,7 +309,7 @@ deepSearch:SetCallback(function(enabled)
     deepSearchFlag = enabled
 
     if enabled then
-        MessageBox.Show("Notice", "Deep searching may result in longer scan times!", MessageType.OK)
+        MessageBox.Show("Notice", "Deep searching may result in longer scan times TEST TSET!", MessageType.OK)
     end
 end)
 
