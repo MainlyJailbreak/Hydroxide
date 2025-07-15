@@ -1,6 +1,6 @@
 
 
-## WITH FIXED UI
+## Fixed that nasty ui where layers would get stacked
 ```lua
 local owner = "MainlyJailbreak"
 local branch = "revision"
