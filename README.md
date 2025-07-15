@@ -1,7 +1,6 @@
 
-##NOW WITH FIXED UI
 
-## Script
+## WITH FIXED UI
 ```lua
 local owner = "MainlyJailbreak"
 local branch = "revision"
